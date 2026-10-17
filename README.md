@@ -138,7 +138,7 @@ Sign in with Apify OAuth when asked, or send `Authorization: Bearer <APIFY_TOKEN
 
 ## Pricing
 
-$3.99 per 1,000 hotels ($0.00399 per hotel, every booking site's price included), no start fee, pay only for results – see [lagenuina_agency/google-hotels-scraper](https://apify.com/lagenuina_agency/google-hotels-scraper).
+From $3.99 per 1,000 hotels on the Apify Free plan down to $2.39 on Gold and above (every booking site's price included), no start fee, pay only for results – see [lagenuina_agency/google-hotels-scraper](https://apify.com/lagenuina_agency/google-hotels-scraper).
 
 ## Disclaimer
 
