@@ -1,0 +1,95 @@
+{
+  "name": "Apify google-hotels-scraper (scheduled)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "id": "4d825a06-4567-4922-b161-1f4b0ef34fdf",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/lagenuina_agency~google-hotels-scraper/run-sync-get-dataset-items",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"hotels\": [\n    \"Hotel Artemide Rome\",\n    \"River Palace Hotel Rome\"\n  ],\n  \"checkInDate\": \"14 days\",\n  \"checkOutDate\": \"15 days\",\n  \"adults\": 2,\n  \"currency\": \"EUR\"\n}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "id": "3df48071-4d49-42a6-9e2b-f34d2e14aa28",
+      "name": "Run Apify actor",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        0
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "",
+          "name": "Apify API token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const MAX_PRICE = 150; // alert threshold per night, in the currency of the request\nreturn $input.all()\n  .filter(({ json }) => json.pricePerNight != null && json.pricePerNight <= MAX_PRICE)\n  .map(({ json }) => ({ json: {\n    alert: `${json.hotelName}: ${json.pricePerNight} ${json.currency}/night on ${json.lowestPriceVendor} (${json.checkInDate})`,\n    hotelName: json.hotelName, pricePerNight: json.pricePerNight, googleHotelsUrl: json.googleHotelsUrl,\n  } }));"
+      },
+      "id": "68d86a90-6e28-468b-928f-0de4faf1e949",
+      "name": "Below threshold",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Run Apify actor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Apify actor": {
+      "main": [
+        [
+          {
+            "node": "Below threshold",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "active": false
+}
